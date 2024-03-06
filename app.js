@@ -1,66 +1,154 @@
-let cart = document.getElementById("cart-value");
-let cartButtons = document.querySelectorAll(".button");
-let cartDiv = document.getElementById("cart");
+var cartValue = document.getElementById("cart-value");
+var cartButton = document.getElementById("cart");
 
-let items=[
-    { itemName: "This was our pact",quantity: 0,price:7.48},
-    { itemName: "The famous five",quantity: 0,price:4.59 },
-    { itemName: "Matilda",quantity: 0,price:4.59 },
-    { itemName: "Harry Potter",quantity: 0,price:6.80},
-    { itemName: "For Young Readers",quantity: 0,price:7.29},
-    { itemName: "Wimpy kid - DIY",quantity: 0,price:4.99},
-    { itemName: "DART Board",quantity: 0,price:17.49},
-    { itemName: "Connect Four",quantity: 0,price:17.99},
-    { itemName: "Jenga",quantity: 0,price:20.99},
-    { itemName: "Monopoly",quantity: 0,price:19.49},
-    { itemName: "Bookmarks",quantity: 0,price:6.49},
-    { itemName: "Birthday Card",quantity: 0,price:8.49},
-    { itemName: "Stuffed toys",quantity: 0,price:3.99},
-    { itemName: "Dream catcher drawing",quantity: 0,price:14.49},
+var addButtons = document.getElementsByClassName("button");
+
+var items = [
+  {
+    name: "This was our pact",
+    quantity: 0,
+    dollars: 7,
+    cents: 49,
+  },
+  {
+    name: "The famous five",
+    quantity: 0,
+    dollars: 4,
+    cents: 59,
+  },
+  {
+    name: "Matilda",
+    quantity: 0,
+    dollars: 6,
+    cents: 80,
+  },
+  {
+    name: "Harry Potter",
+    quantity: 0,
+    dollars: 10,
+    cents: 0,
+  },
+  {
+    name: "For Young Readers",
+    quantity: 0,
+    dollars: 7,
+    cents: 29,
+  },
+  {
+    name: "Wimpy Kid - DIY",
+    quantity: 0,
+    dollars: 4,
+    cents: 99,
+  },
+  {
+    name: "Dart Board",
+    quantity: 0,
+    dollars: 17,
+    cents: 49,
+  },
+  {
+    name: "Connect Four",
+    quantity: 0,
+    dollars: 19,
+    cents: 99,
+  },
+  {
+    name: "Jenga",
+    quantity: 0,
+    dollars: 20,
+    cents: 99,
+  },
+  {
+    name: "Monopoly",
+    quantity: 0,
+    dollars: 19,
+    cents: 49,
+  },
+  {
+    name: "Bookmarks",
+    quantity: 0,
+    dollars: 12,
+    cents: 49,
+  },
+  {
+    name: "Birthday Card",
+    quantity: 0,
+    dollars: 12,
+    cents: 49,
+  },
+  {
+    name: "Stuffed toys",
+    quantity: 0,
+    dollars: 15,
+    cents: 99,
+  },
+  {
+    name: "Dream catcher drawing",
+    quantity: 0,
+    dollars: 18,
+    cents: 49,
+  },
 ];
 
-let count = 0;
-let cartItems = [];
-let total = 0;
-let itemDetail = "";
-
-for (let i = 0; i < cartButtons.length; i++) {
-  cartButtons[i].addEventListener("click", () => {
-    count++;
-    cart.textContent = count;
-    items[i].quantity++;
-  });
+function updateCart() {
+  let cart = 0;
+  for (index = 0; index < items.length; index++) {
+    cart = cart + items[index].quantity;
+  }
+  cartValue.innerHTML = cart;
 }
 
-cartDiv.onclick = () => {
-  itemDetail = "";
-  items.forEach((item) => {
-    if (item.quantity > 0) {
-      cartItems.push(item);
-    }
-  });
+for (let i = 0; i < addButtons.length; i++) {
+  addButtons[i].onclick = (e) => {
+    items[i].quantity++;
+    updateCart();
+  };
+}
 
-  cartItems.forEach((item) => {
-    itemDetail += `Item name: ${item.itemName} - Quantity: ${item.quantity} ` + '\n';
-    total += item.price * item.quantity;
-  });
+var finalDollars = 0;
+var finalCents = 0;
 
-  console.log(itemDetail);
-  console.log(`Total Price: $${total.toFixed(2)}`);
-  console.log(`Quantity: ${count}`);
-  sendWhatsapp();
-  itemDetail = "";
-  total = 0;
-  cartItems = [];
-};
+function updatePrice() {
+  let totalPriceInCents = 0;
 
-function sendWhatsapp() {
-  var wtspurl = "https://api.whatsapp.com/send?phone=9193566382&text=Order%20details:-%0A";
+  for (index = 0; index < items.length; index++) {
+    totalPriceInCents =
+      totalPriceInCents +
+      items[index].quantity * (items[index].dollars * 100 + items[index].cents);
+  }
+  finalDollars = Math.floor(totalPriceInCents / 100);
+  finalCents = totalPriceInCents % 100;
+}
+
+let link='https://api.whatsapp.com/send?phone=9896652634&text=Order%20Details%20:'
+
+
+function updateWhatsappLink(){
+  for(index = 0; index<items.length; index++){
+if(items[index].quantity !=0){
+    link +="%0A" + items[index].name + "%20" + items[index].quantity
+  }
+}
+  link += "%0A" + "Total%20price:%20:$" + finalDollars + "." + finalCents;
+}
+cartButton.onclick= () => {
+  updatePrice();
+  updateWhatsappLink()
+  window.open(link,"_blank")
+
+
   for (let index = 0; index < items.length; index++) {
     if (items[index].quantity != 0) {
-      wtspurl += "%0A" + items[index].itemName + "%20" + items[index].quantity;
+      console.log(
+        "Item name: " +
+          items[index].name +
+          " - Quantity: " +
+          items[index].quantity
+      );
     }
   }
-  wtspurl += "%0A%0AThe%20total%20amount%20is%20" + total.toFixed(2) + "%20$.%20"
-  window.open(wtspurl)
+
+  console.log(
+    "The total amount is " + finalDollars + "$ and " + finalCents + " cents"
+  );
 };
